@@ -390,20 +390,6 @@ input:checked+.slider:before {
 
 ;
 
-.tangan {
+form table tr td .tangan {
   cursor: pointer;
-}
-
-input[type=radio]+label.opsi {
-  color: #000;
-  cursor: pointer
-}
-
-input[type=radio]:checked+label.opsi::before {
-  content: " \2705"
-}
-
-input[type=radio]:checked+label.opsi {
-  color: #00f;
-  background-color: #ff0
 }

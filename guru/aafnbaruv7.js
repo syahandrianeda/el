@@ -1234,9 +1234,10 @@ btnfn7video.addEventListener("click", function () {
 
 function barufindkuncipgkd(teks) {
     let findPG = teks.match(/^_PG_\d{1,2}\s|^_OPSI-PG_\d{1,2}[A-D]\s|^_OPSI-PG-C_\d{1,2}[A-D](\s)|^_OPSI-SEL_\d{1,2}[A-D]\s|^_ESSAY-NO_\d{1,2}\s/gm);
-    let div = document.querySelector(".tekeditorpg");
+    let textarea = document.getElementById("idmateri");
     // <div id="divbantu_kuncijawaban"></div>
     // <div id="divbantu_sebarankd"></div>
+    let div = document.querySelector(".tekeditorpg");
     let divradiopg = document.getElementById("divbantu_kuncijawaban");
     divradiopg.innerHTML = "";
 
@@ -1319,7 +1320,7 @@ function barufindkuncipgkd(teks) {
                     let arrayopsi = objekdatasoal[a].arrayopsi;
                     //console.log(arrayopsi);
                     for (let b = 0; b < arrayopsi.length; b++) {
-                        html += `<td class="tdpg_pgeditor_${arrayopsi[b]} tdnosoal_editor_${objekdatasoal[a].nosoal} tangan">
+                        html += `<td class="tdpg_pgeditor_${arrayopsi[b]} tdnosoal_editor_${objekdatasoal[a].nosoal}" style="cursor:pointer">
                         <label for="tomboleditor_bantuopsi${arrayopsi[b]}" class="lbl_pgeditor_${arrayopsi[b]}">${arrayopsi[b].match(/\D/)[0]}</label>
                         </td>`;
                         el_input += `<br/><input type="radio" id="tomboleditor_bantuopsi${arrayopsi[b]}" name="rdsoal_${objekdatasoal[a].nosoal}" class="pg_buatkuncikd" value="${arrayopsi[b]}" onchange="checked_buatkunci(this)"/>${arrayopsi[b]}`;
@@ -1337,10 +1338,28 @@ function barufindkuncipgkd(teks) {
         divradiopg.innerHTML = el_input;
         let cekkunci = teks.match(/^_KUNCI-PG_/gm);
         let cekkd= teks.match(/^_KUNCI-KD_/gm);
-        if(cekkd !== null || cekkunci !== null){
-            console.log(cekkd);
-            console.log(cekkunci);
+        if(cekkd !== null){
+            // console.log(cekkd);
         }
+        if(cekkunci !== null){
+            // console.log(cekkunci);
+            
+            let val = textarea.value;
+            let n = val.length;
+            let awal = val.indexOf("_KUNCI-PG_");
+            let batasawal = val.substring(awal, n)
+            
+            let str_pg_kunci = batasawal.split("\n")[0];
+            let cekunci = str_pg_kunci.match(/\d+[A-D]/gm);
+            console.log(str_pg_kunci);
+            for(let a = 0 ; a < cekunci.length ; a++){
+                let tdel = document.querySelector(".tdpg_pgeditor_"+cekunci[a]);
+                tdel.className += " w3-light-blue";
+                document.getElementById("tomboleditor_bantuopsi"+cekunci[a]).checked = true;
+            }
+
+        }
+
 
         // nolelemen= elemenduplikat.length 
 
@@ -1352,7 +1371,7 @@ function barufindkuncipgkd(teks) {
         //     }
         //     div.innerHTML = htmltes;
         // };
-        console.log(result)
+        // console.log(result)
     } else {
         let html = ` PENGATURAN KUNCI JAWABAN
         <br /><br />
@@ -1388,7 +1407,7 @@ const checked_buatkunci = (el) => {
     let elaktif = document.querySelector(".tdpg_pgeditor_" + opsilengkap);
     //hapus dulu bg warannya;
     for (i = 0; i < ele.length; i++) {
-        ele[i].className = ele[i].className.replace("w3-light-blue");
+        ele[i].className = ele[i].className.replace("w3-light-blue","");
     };
     elaktif.className += " w3-light-blue";
 
@@ -1396,11 +1415,31 @@ const checked_buatkunci = (el) => {
     let val = textarea.value;
     let n = val.length;
     let awal = val.indexOf("_KUNCI-PG_");
-    let batasawal = val.substring(awal, n).split("/n")[0]
+    let batasawal = val.substring(awal, n)
+    
+    let str_pg_kunci = batasawal.split("\n")[0];
 
-    console.log(awal);
-    console.log(batasawal);
+    let ceklis = document.querySelectorAll(".pg_buatkuncikd");
+    let arrceklis = []
+    for(j = 0 ; j < ceklis.length ; j++){
+        let n = ceklis[j].value;
+        if(ceklis[j].checked){
+            arrceklis.push(n)
 
+        }
+
+    }
+    // console.log(arrceklis)
+    let teksnya = "_KUNCI-PG_" + arrceklis.join(",")
+    // console.log(str_pg_kunci)
+    // console.log(teksnya);
+    // textarea.value = textarea.value.substring(0, awal) + teksnya + textarea.value.substring(end, len);
+    let teksganti =str_pg_kunci
+    textarea.value = textarea.value.replace(str_pg_kunci,teksnya);
+    // console.log(batasawal);
+    // console.log(str_pg_kunci);
+
+    
     // var len = textarea.value.length;
     // var start = textarea.selectionStart;
     // var end = textarea.selectionEnd;
