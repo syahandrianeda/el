@@ -1,14 +1,17 @@
 let jsonlocalstorage, jsonlocalstoragetypeuser, linkdatauser;
 let linkDataUserWithIdss, linkAbsenKaldik // digunakan untuk link yang mengakses SS DataUSer (guru/siswa)
 let namauser, ruangankelas, gmpkelas
-let idguru = "", idgurubaru = "";
-let jsondatasiswa = [], arrayStringTglLibur = [];
+let idguru = "",
+    idgurubaru = "";
+let jsondatasiswa = [],
+    arrayStringTglLibur = [];
 let arraydatasiswadariimport = [];
 let idNamaSekolah, idNamaKelas, idGuruKelas, idNipGuruKelas,
     idKepsek, idNipKepsek, idSemester,
     idJenisGuru, idNoWa, idTeksTapel,
     idNamaKepsek, idJenjang;
-let REKAPAbsen = {}, OBJEKHariEfektif;
+let REKAPAbsen = {},
+    OBJEKHariEfektif;
 let obDataRekapKehadiran;
 let idinterval
 let informasiusulandata = {};
@@ -16,132 +19,147 @@ let informasiusulandata = {};
 jsonlocalstorage = JSON.parse(localStorage.getItem("inst_id"));
 let stoploadingtopbar;
 const loadingtopbarin = (el) => {
-    var elem = document.querySelector("." + el);
-    elem.className = elem.className.replace("w3-hide", "")
-    var width = 1;
-    stoploadingtopbar = setInterval(frame2, 10);
-    function frame2() {
-        // if (width >= 1000000) {
-        //     clearInterval(stoploadingtopbar);
-        //     // elem.style.width = 0;
-        //     // elem.style.width = 90 + '%';
-        //     // elem.innerHTML = `100%`;
-        // } else {
-        width += 100;
-        elem.style.width = width / 1000 + '%';
-        //elem.innerHTML = (width / 105).toFixed(0) + "% ";
-        //}
+        var elem = document.querySelector("." + el);
+        elem.className = elem.className.replace("w3-hide", "")
+        var width = 1;
+        stoploadingtopbar = setInterval(frame2, 10);
+
+        function frame2() {
+            // if (width >= 1000000) {
+            //     clearInterval(stoploadingtopbar);
+            //     // elem.style.width = 0;
+            //     // elem.style.width = 90 + '%';
+            //     // elem.innerHTML = `100%`;
+            // } else {
+            width += 100;
+            elem.style.width = width / 1000 + '%';
+            //elem.innerHTML = (width / 105).toFixed(0) + "% ";
+            //}
+        }
     }
-}
-(async function () {
-    loadingtopbarin("loadingtopbar");
-    OBJEKHariEfektif = {
-        "Januari": 0, "Februari": 0, "Maret": 0,
-        "April": 0, "Mei": 0, "Juni": 0, "Juli": 0, "Agustus": 0,
-        "September": 0, "Oktober": 0, "November": 0, "Desember": 0
-    };
+    (async function () {
+        loadingtopbarin("loadingtopbar");
+        OBJEKHariEfektif = {
+            "Januari": 0,
+            "Februari": 0,
+            "Maret": 0,
+            "April": 0,
+            "Mei": 0,
+            "Juni": 0,
+            "Juli": 0,
+            "Agustus": 0,
+            "September": 0,
+            "Oktober": 0,
+            "November": 0,
+            "Desember": 0
+        };
 
-    obDataRekapKehadiran = { "Hadir": 0, "Ijin": 0, "Sakit": 0, "Alpa": 0 };
+        obDataRekapKehadiran = {
+            "Hadir": 0,
+            "Ijin": 0,
+            "Sakit": 0,
+            "Alpa": 0
+        };
 
-    let tgl = new Date();
-    let m = tgl.getMonth();
-    let sm = tgl.getMonth() + 1;
-    let d = tgl.getDate();
-    let day = tgl.getDay()
-    let y = tgl.getFullYear();
-    let string = y + "-" + sm + "-" + d;
-    let arraynamaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-    let teksbulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "Nopember", "Desember"];
-    htmlhariini.innerHTML = "Kehadiran Hari Ini " + arraynamaHari[day] + ", " + d + " " + teksbulan[m] + " " + y;// + tanggalfull(string)
-    jsonlocalstoragetypeuser = JSON.parse(localStorage.getItem("typeuser"));
-    namauser = jsonlocalstoragetypeuser.user;
-    gmpkelas = jsonlocalstoragetypeuser.akses;
-    ruangankelas = jsonlocalstoragetypeuser.room;
-    idguru = jsonlocalstoragetypeuser.idrow;
-    idimage = jsonlocalstoragetypeuser.idimg;//
-    idNamaKelas = jsonlocalstoragetypeuser.room;
-    idGuruKelas = jsonlocalstoragetypeuser.user;
-    idNipGuruKelas = jsonlocalstoragetypeuser.nip_guru;
-    idNamaKepsek = jsonlocalstoragetypeuser.nama_kepsek;
-    idNipKepsek = jsonlocalstoragetypeuser.nip_kepsek;
-    idJenisGuru = jsonlocalstoragetypeuser.akses;
-    idNoWa = jsonlocalstoragetypeuser.no_wa;
-    idSemester = jsonlocalstoragetypeuser.idsemester;
-    idTeksTapel = jsonlocalstoragetypeuser.tekstapel;
-    idJenjang = jsonlocalstoragetypeuser.jenjang;
-    jsonlocalstorage = JSON.parse(localStorage.getItem("inst_id"));
-    linkDataUserWithIdss = jsonlocalstorage.url_datauser + "?idss=" + jsonlocalstorage.ss_datauser;
-    linkAbsenKaldik = jsonlocalstorage.url_dataabsen + "?idss=" + jsonlocalstorage.ss_dataabsen;
-    url_absenkaldik = jsonlocalstorage.url_dataabsen + "?action=datakaldik&idss=" + jsonlocalstorage.ss_dataabsen
-    let idInstansi = JSON.parse(localStorage.getItem("inst_id"));
-    idNamaSekolah = idInstansi.namainstansi;
-    await fetch(url_absenkaldik).then(m => m.json()).then(k => {
-        localStorage.setItem('Kaldik', JSON.stringify(k.records));
-        localStorage.setItem('TglLibur', JSON.stringify(k.stringTgl))
-        arrayStringTglLibur = k.stringTgl.map(m => Object.keys(m)).reduce((a, b) => a.concat(b));
-        arrayKetLibur = k.stringTgl.map(m => Object.keys(m).map(n => m[n])).reduce((a, b) => a.concat(b));
-    }).catch(er => {
-        console.log("muat ulang: " + er);
+        let tgl = new Date();
+        let m = tgl.getMonth();
+        let sm = tgl.getMonth() + 1;
+        let d = tgl.getDate();
+        let day = tgl.getDay()
+        let y = tgl.getFullYear();
+        let string = y + "-" + sm + "-" + d;
+        let arraynamaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        let teksbulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "Nopember", "Desember"];
+        htmlhariini.innerHTML = "Kehadiran Hari Ini " + arraynamaHari[day] + ", " + d + " " + teksbulan[m] + " " + y; // + tanggalfull(string)
+        jsonlocalstoragetypeuser = JSON.parse(localStorage.getItem("typeuser"));
+        namauser = jsonlocalstoragetypeuser.user;
+        gmpkelas = jsonlocalstoragetypeuser.akses;
+        ruangankelas = jsonlocalstoragetypeuser.room;
+        idguru = jsonlocalstoragetypeuser.idrow;
+        idimage = jsonlocalstoragetypeuser.idimg; //
+        idNamaKelas = jsonlocalstoragetypeuser.room;
+        idGuruKelas = jsonlocalstoragetypeuser.user;
+        idNipGuruKelas = jsonlocalstoragetypeuser.nip_guru;
+        idNamaKepsek = jsonlocalstoragetypeuser.nama_kepsek;
+        idNipKepsek = jsonlocalstoragetypeuser.nip_kepsek;
+        idJenisGuru = jsonlocalstoragetypeuser.akses;
+        idNoWa = jsonlocalstoragetypeuser.no_wa;
+        idSemester = jsonlocalstoragetypeuser.idsemester;
+        idTeksTapel = jsonlocalstoragetypeuser.tekstapel;
+        idJenjang = jsonlocalstoragetypeuser.jenjang;
         jsonlocalstorage = JSON.parse(localStorage.getItem("inst_id"));
+        linkDataUserWithIdss = jsonlocalstorage.url_datauser + "?idss=" + jsonlocalstorage.ss_datauser;
+        linkAbsenKaldik = jsonlocalstorage.url_dataabsen + "?idss=" + jsonlocalstorage.ss_dataabsen;
         url_absenkaldik = jsonlocalstorage.url_dataabsen + "?action=datakaldik&idss=" + jsonlocalstorage.ss_dataabsen
-
-        fetch(url_absenkaldik).then(m => m.json()).then(k => {
-            //console.table(k.records)
+        let idInstansi = JSON.parse(localStorage.getItem("inst_id"));
+        idNamaSekolah = idInstansi.namainstansi;
+        await fetch(url_absenkaldik).then(m => m.json()).then(k => {
             localStorage.setItem('Kaldik', JSON.stringify(k.records));
-
             localStorage.setItem('TglLibur', JSON.stringify(k.stringTgl))
             arrayStringTglLibur = k.stringTgl.map(m => Object.keys(m)).reduce((a, b) => a.concat(b));
             arrayKetLibur = k.stringTgl.map(m => Object.keys(m).map(n => m[n])).reduce((a, b) => a.concat(b));
-            // console.log(k.records)
-            // console.log(k.stringTgl)
-        })
-    });
-
-    namasekolah.innerHTML = namauser;
-    namakota.innerHTML = gmpkelas + " " + ruangankelas;
-    var logo = document.getElementById("logosekolahmenu");
-    logo.setAttribute("src", "https://drive.google.com/uc?export=view&id=" + idimage);
-    logo.setAttribute("alt", "Poto Guru");
-    logo.setAttribute("style", "width:90px; height:90px");
-    // if (localStorage.hasOwnProperty("datasiswa_" + ruangankelas)) {
-    //     jsondatasiswa = JSON.parse(localStorage.getItem("datasiswa_" + ruangankelas)).datasiswa;
-    // } else {
-    await fetch(linkDataUserWithIdss + "&action=datasiswaaktif&kelas=" + ruangankelas)
-        .then(m => m.json())
-        .then(k => {
-            jsondatasiswa = k.datasiswa;
-            localStorage.setItem("datasiswa_" + ruangankelas, JSON.stringify(k));
-
         }).catch(er => {
-            console.log("muat ulang lagi: " + er);
-            fetch(linkDataUserWithIdss + "&action=datasiswaaktif&kelas=" + ruangankelas)
-                .then(m => m.json())
-                .then(k => {
-                    jsondatasiswa = k.datasiswa;
-                    localStorage.setItem("datasiswa_" + ruangankelas, JSON.stringify(k));
+            console.log("muat ulang: " + er);
+            jsonlocalstorage = JSON.parse(localStorage.getItem("inst_id"));
+            url_absenkaldik = jsonlocalstorage.url_dataabsen + "?action=datakaldik&idss=" + jsonlocalstorage.ss_dataabsen
 
-                })
+            fetch(url_absenkaldik).then(m => m.json()).then(k => {
+                //console.table(k.records)
+                localStorage.setItem('Kaldik', JSON.stringify(k.records));
+
+                localStorage.setItem('TglLibur', JSON.stringify(k.stringTgl))
+                arrayStringTglLibur = k.stringTgl.map(m => Object.keys(m)).reduce((a, b) => a.concat(b));
+                arrayKetLibur = k.stringTgl.map(m => Object.keys(m).map(n => m[n])).reduce((a, b) => a.concat(b));
+                // console.log(k.records)
+                // console.log(k.stringTgl)
+            })
         });
-    // }
-    await fetch(linkDataUserWithIdss + "&action=usulanperbaikandata")
-        .then(m => m.json())
-        .then(k => {
-            //console.log(k)
-            let dataaktif = k.datasiswa.filter(s => s.aktif == "aktif");
-            let usulkelasini = k.datasiswa.filter(k => (k.nama_rombel == idNamaKelas));
-            let usulkelasinibelumdisetujui = dataaktif.filter(k => (k.nama_rombel == idNamaKelas && k.usulanperubahandata.indexOf("disetujui") == -1));
-            // console.log(usulkelasinibelumdisetujui.length);
-            // console.log(usulkelasinibelumdisetujui.length);
 
-            let usulkelasinisudahdisetujui = dataaktif.filter(k => (k.nama_rombel == idNamaKelas && k.usulanperubahandata.indexOf("disetujui") > -1));
-            informasiusulandata["usulanbaru"] = usulkelasinibelumdisetujui;
-            informasiusulandata["usulandisetujui"] = usulkelasinisudahdisetujui;
-            informasiusulandata["all"] = usulkelasini;
+        namasekolah.innerHTML = namauser;
+        namakota.innerHTML = gmpkelas + " " + ruangankelas;
+        var logo = document.getElementById("logosekolahmenu");
+        logo.setAttribute("src", "https://drive.google.com/uc?export=view&id=" + idimage);
+        logo.setAttribute("alt", "Poto Guru");
+        logo.setAttribute("style", "width:90px; height:90px");
+        // if (localStorage.hasOwnProperty("datasiswa_" + ruangankelas)) {
+        //     jsondatasiswa = JSON.parse(localStorage.getItem("datasiswa_" + ruangankelas)).datasiswa;
+        // } else {
+        await fetch(linkDataUserWithIdss + "&action=datasiswaaktif&kelas=" + ruangankelas)
+            .then(m => m.json())
+            .then(k => {
+                jsondatasiswa = k.datasiswa;
+                localStorage.setItem("datasiswa_" + ruangankelas, JSON.stringify(k));
+
+            }).catch(er => {
+                console.log("muat ulang lagi: " + er);
+                fetch(linkDataUserWithIdss + "&action=datasiswaaktif&kelas=" + ruangankelas)
+                    .then(m => m.json())
+                    .then(k => {
+                        jsondatasiswa = k.datasiswa;
+                        localStorage.setItem("datasiswa_" + ruangankelas, JSON.stringify(k));
+
+                    })
+            });
+        // }
+        await fetch(linkDataUserWithIdss + "&action=usulanperbaikandata")
+            .then(m => m.json())
+            .then(k => {
+                //console.log(k)
+                let dataaktif = k.datasiswa.filter(s => s.aktif == "aktif");
+                let usulkelasini = k.datasiswa.filter(k => (k.nama_rombel == idNamaKelas));
+                let usulkelasinibelumdisetujui = dataaktif.filter(k => (k.nama_rombel == idNamaKelas && k.usulanperubahandata.indexOf("disetujui") == -1));
+                // console.log(usulkelasinibelumdisetujui.length);
+                // console.log(usulkelasinibelumdisetujui.length);
+
+                let usulkelasinisudahdisetujui = dataaktif.filter(k => (k.nama_rombel == idNamaKelas && k.usulanperubahandata.indexOf("disetujui") > -1));
+                informasiusulandata["usulanbaru"] = usulkelasinibelumdisetujui;
+                informasiusulandata["usulandisetujui"] = usulkelasinisudahdisetujui;
+                informasiusulandata["all"] = usulkelasini;
 
 
-            if (usulkelasinibelumdisetujui.length !== jsondatasiswa.length) {
-                document.querySelector(".pesankhusussiswa").className = document.querySelector(".pesankhusussiswa").className.replace(" w3-hide", "");
-                document.querySelector(".pesankhusussiswa").innerHTML = `Anda memiliki ${usulkelasinibelumdisetujui.length} usulan data perubahan data baru (Daftar Ulang) dari siswa Anda yang belum disetujui (diverifikasi). Segera Verifikasi data tersebut di menu Data Kelas Anda. (Tombol informasi berwarna merah menandakan siswa yang mengusulkan perbaruan data.)
+                if (usulkelasinibelumdisetujui.length !== jsondatasiswa.length) {
+                    document.querySelector(".pesankhusussiswa").className = document.querySelector(".pesankhusussiswa").className.replace(" w3-hide", "");
+                    document.querySelector(".pesankhusussiswa").innerHTML = `Anda memiliki ${usulkelasinibelumdisetujui.length} usulan data perubahan data baru (Daftar Ulang) dari siswa Anda yang belum disetujui (diverifikasi). Segera Verifikasi data tersebut di menu Data Kelas Anda. (Tombol informasi berwarna merah menandakan siswa yang mengusulkan perbaruan data.)
                 <br/>
                 <br/>
                 <table class="w3-table-all w3-striped" style="width:50%;margin:0 auto">
@@ -160,59 +178,59 @@ const loadingtopbarin = (el) => {
                 <hr/>
                 `;
 
-            } else {
-                if (document.querySelector(".pesankhusussiswa").className.indexOf("w3-hide") == -1) {
-                    document.querySelector(".pesankhusussiswa").className += " w3-hide";
+                } else {
+                    if (document.querySelector(".pesankhusussiswa").className.indexOf("w3-hide") == -1) {
+                        document.querySelector(".pesankhusussiswa").className += " w3-hide";
+                    }
                 }
-            }
 
-        })
-        .catch(er => {
-            console.log(er);
-        })
-    await fetch(linkDataUserWithIdss + "&action=datasiswatidakaktif")
-        .then(m => m.json())
-        .then(k => {
-            arraysiswatidakaktif = k.datasiswa;
-            jumlahseluruhsiswadisekolah = k.total
-            localStorage.setItem("datasiswatidakaktif", JSON.stringify(k))
-
-
-        }).catch(er => {
-            console.log("muat ulang: " + er);
-            fetch(linkDataUserWithIdss + "&action=datasiswatidakaktif")
-                .then(m => m.json())
-                .then(k => {
-                    arraysiswatidakaktif = k.datasiswa;
-                    jumlahseluruhsiswadisekolah = k.total
-                    localStorage.setItem("datasiswatidakaktif", JSON.stringify(k))
+            })
+            .catch(er => {
+                console.log(er);
+            })
+        await fetch(linkDataUserWithIdss + "&action=datasiswatidakaktif")
+            .then(m => m.json())
+            .then(k => {
+                arraysiswatidakaktif = k.datasiswa;
+                jumlahseluruhsiswadisekolah = k.total
+                localStorage.setItem("datasiswatidakaktif", JSON.stringify(k))
 
 
-                })
+            }).catch(er => {
+                console.log("muat ulang: " + er);
+                fetch(linkDataUserWithIdss + "&action=datasiswatidakaktif")
+                    .then(m => m.json())
+                    .then(k => {
+                        arraysiswatidakaktif = k.datasiswa;
+                        jumlahseluruhsiswadisekolah = k.total
+                        localStorage.setItem("datasiswatidakaktif", JSON.stringify(k))
 
-        });
 
-    if (navigator.storage && navigator.storage.estimate) {
-        const quota = await navigator.storage.estimate();
-        const percentageUsed = (quota.usage / quota.quota) * 100;
-        console.log(`You've used ${percentageUsed}% of the available storage.`);
-        const remaining = quota.quota - quota.usage;
-        console.log(`You can write up to ${remaining} more bytes.`);
-    }
-    await buattabelrekapsemester();
+                    })
 
-    dashboardgurukelas.innerHTML = idJenisGuru + " " + idNamaKelas + " ( " + namauser + " )";
+            });
 
-    clearInterval(stoploadingtopbar);
-    let divlod = document.querySelector(".loadingtopbar");
-    divlod.style.width = "100%";
-    setTimeout(() => {
-        divlod.style.width = "1px"
-        divlod.className += " w3-hide";
+        if (navigator.storage && navigator.storage.estimate) {
+            const quota = await navigator.storage.estimate();
+            const percentageUsed = (quota.usage / quota.quota) * 100;
+            console.log(`You've used ${percentageUsed}% of the available storage.`);
+            const remaining = quota.quota - quota.usage;
+            console.log(`You can write up to ${remaining} more bytes.`);
+        }
+        await buattabelrekapsemester();
 
-    }, 3000);
+        dashboardgurukelas.innerHTML = idJenisGuru + " " + idNamaKelas + " ( " + namauser + " )";
 
-})();
+        clearInterval(stoploadingtopbar);
+        let divlod = document.querySelector(".loadingtopbar");
+        divlod.style.width = "100%";
+        setTimeout(() => {
+            divlod.style.width = "1px"
+            divlod.className += " w3-hide";
+
+        }, 3000);
+
+    })();
 
 const updateDatasiswa = () => {
     fetch(linkDataUserWithIdss + "&action=datasiswaaktif&kelas=" + ruangankelas)
@@ -228,8 +246,8 @@ function tabeldatakelassaya() { // Versi ngambil data dari TAB SPREADSHEET .... 
     try {
         arraydatasiswadariimport = []
         document.getElementById("inputimportdatasiswa").value = "";
-        let perluverifikasi = informasiusulandata["usulanbaru"];//.filter(s => s.usulanperubahandata.indexOf);
-        let sudahverifikasi = informasiusulandata["usulandisetujui"];//.filter(s => s.usulanperubahandata.indexOf);
+        let perluverifikasi = informasiusulandata["usulanbaru"]; //.filter(s => s.usulanperubahandata.indexOf);
+        let sudahverifikasi = informasiusulandata["usulandisetujui"]; //.filter(s => s.usulanperubahandata.indexOf);
         //console.log(perluverifikasi);
         loadkelassaya.innerHTML = "<i class='fa fa-spinner fa-spin w3-xxxlarge'></i>";
         var tempattabel = document.getElementById("tabeltempatdaftarkelassaya");
@@ -331,7 +349,7 @@ function tabeldatakelassaya() { // Versi ngambil data dari TAB SPREADSHEET .... 
                 btnn.setAttribute("class", "w3-button warnaeka w3-round w3-card-4 w3-border-bottom w3-border-black w3-border-right");
             }
 
-            btnn.innerHTML = "<i class='fa fa-save  '></i>";// (" + jsondatasiswa[i].id + ")";
+            btnn.innerHTML = "<i class='fa fa-save  '></i>"; // (" + jsondatasiswa[i].id + ")";
             var btnnn = document.createElement("button");
             btnnn.setAttribute("onclick", "hapussiswa(" + jsondatasiswa[i].id + ")");
             btnnn.setAttribute("class", "w3-button warnaeka w3-round w3-card-4 w3-border-bottom w3-border-black w3-border-right");
@@ -538,7 +556,7 @@ const importdatasiswa = () => {
     let idelemen = "tabeltempatdaftarkelassaya";
     let elinput = document.getElementById("inputimportdatasiswa");
     elinput.addEventListener('change', () => {
-        var fileUpload = elinput;//document.getElementById("fileUpload");
+        var fileUpload = elinput; //document.getElementById("fileUpload");
 
         //Validate whether File is valid Excel file.
         var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
@@ -587,7 +605,8 @@ const barusimpanserverdatasiswa = async () => {
     $('#infoloadingljk').nextAll('button').remove();
 
     //buat dulu data anaknya!
-    let datahtml = "", fil;
+    let datahtml = "",
+        fil;
     datahtml += `<h3 class="w3-center">Proses Pengiriman Data</h3>
     Mohon Tunggu, proses membutuhkan waktu yang lama
     <div class="w3-border">
@@ -671,6 +690,7 @@ const animasimove = (el) => {
     var elem = document.querySelector("." + el);
     var width = 1;
     idinterval = setInterval(frame, 10);
+
     function frame() {
         if (width >= 8000) {
             clearInterval(idinterval);
@@ -727,7 +747,7 @@ const prosesimportdasasiswa = (data, idelemen) => {
                 if (key == "id" || key == "jenjang") {
                     objek[key] = parseInt(excelRows[i][key]);
                 } else if (angkadistring.indexOf(key) > -1) {
-                    objek[key] = excelRows[i][key];//.replace("'", "");
+                    objek[key] = excelRows[i][key]; //.replace("'", "");
 
                 } else if (key == "pd_tanggallahir") {
                     objek[key] = tanggalfull(new Date(excelRows[i][key]));
@@ -794,10 +814,14 @@ async function generatoreditsiswa(pararrayobjek, y, elemen) {
 
     let td = document.querySelector(elemen);
     let namatabel = document.getElementById("myTable").getElementsByTagName("tbody")[0].rows[y];
-    let xid = pararrayobjek[y].id, xjenjang = idJenjang, xnama_rombel = idNamaKelas,
+    let xid = pararrayobjek[y].id,
+        xjenjang = idJenjang,
+        xnama_rombel = idNamaKelas,
         xnis = namatabel.cells[2].innerHTML,
-        xnisn = namatabel.cells[3].innerHTML, xnik = pararrayobjek[y].nik,
-        xnokk = pararrayobjek[y].nokk, xpdnama = namatabel.cells[4].innerHTML,
+        xnisn = namatabel.cells[3].innerHTML,
+        xnik = pararrayobjek[y].nik,
+        xnokk = pararrayobjek[y].nokk,
+        xpdnama = namatabel.cells[4].innerHTML,
         xpdjk = namatabel.cells[5].innerHTML,
         xpdtl = namatabel.cells[7].innerHTML;
     let t = namatabel.cells[8].innerHTML;
@@ -808,7 +832,8 @@ async function generatoreditsiswa(pararrayobjek, y, elemen) {
         spdibu = namatabel.cells[10].innerHTML,
         spdalamat = namatabel.cells[11].innerHTML,
         spdhp = namatabel.cells[12].innerHTML,
-        spdaktif = "aktif", spdeditoleh = namauser;
+        spdaktif = "aktif",
+        spdeditoleh = namauser;
 
     let jsonlamaanakini = pararrayobjek.filter(s => s.id == xid)[0];
     jsonlamaanakini["id"] = xid;
@@ -832,7 +857,7 @@ async function generatoreditsiswa(pararrayobjek, y, elemen) {
 
 
     let pus = [];
-    let key = arrayheadsumber.filter(s => s !== "time_stamp");//array
+    let key = arrayheadsumber.filter(s => s !== "time_stamp"); //array
 
     //Jika sebelumnya belum daftar ulang, maka API yang digunakan ini
     let databelumkirim = new FormData();
@@ -853,9 +878,9 @@ async function generatoreditsiswa(pararrayobjek, y, elemen) {
     if (sudahdaftarulang.length == 0) {
         let aaa = linkDataUserWithIdss + "&action=editsiswa";
         await fetch(aaa, {
-            method: "post",
-            body: databelumkirim
-        }).then(m => m.json())
+                method: "post",
+                body: databelumkirim
+            }).then(m => m.json())
             .then(f => {
                 console.log(f);
                 clearInterval(idinterval);
@@ -871,9 +896,9 @@ async function generatoreditsiswa(pararrayobjek, y, elemen) {
             });
     } else {
         await fetch(url_absensiswa + "?action=daftarulangduasheet", {
-            method: "post",
-            body: datakirim
-        })
+                method: "post",
+                body: datakirim
+            })
             .then(m => m.json())
             .then(r => {
                 //infoloadingljk.innerHTML = r.result;
@@ -902,7 +927,7 @@ async function generatoreditsiswa(pararrayobjek, y, elemen) {
 const profilguru = async () => {
     modaledituser.style.display = "block";
     formedituser.style.display = "block";
-    prosesloadingdaftaredit.innerHTML = "";//<i class='fa fa-spin fa-spinner w3-xxxlarge'><i> sedang mencari data Anda..";
+    prosesloadingdaftaredit.innerHTML = ""; //<i class='fa fa-spin fa-spinner w3-xxxlarge'><i> sedang mencari data Anda..";
     registrasikanedit.style.display = "block";
     judulpetunjukedit.innerHTML = "<i class='fa fa-spin fa-spinner w3-xxxlarge'><i>"
     w3_close();
@@ -920,7 +945,7 @@ const profilguru = async () => {
                     for (d = 0; d < key.length; d++) {
                         if (elementform[x].name == key[d]) {
                             if (elementform[x].name == "password") {
-                                elementform[x].value = nilai[d]//;
+                                elementform[x].value = nilai[d] //;
                             } else {
                                 elementform[x].value = nilai[d]
                             };
@@ -942,13 +967,15 @@ function logout() {
     window.localStorage.clear();
     window.location.replace("/index.html")
 }
-
-function pembelajaran() {
-    tampilinsublamangurukelas("pembelajaran");
+let buateditorkdaktif = [];
+async function pembelajaran() {
+    loadingtopbarin("loadingtopbar");
     timelinekbm.style.display = "block";
     timelinekbm.innerHTML = "<i class='fa fa-spin fa-spinner w3-xxlarge'></i>";
-
-    fetch(linkmateri + "&action=kronolog&idtoken=" + idJenjang)
+    await kurikulumdiamdiam();
+    //buateditorkdaktif= tabelkearray();
+    tampilinsublamangurukelas("pembelajaran");
+    await fetch(linkmateri + "&action=kronolog&idtoken=" + idJenjang)
         .then(m => m.json())
         .then(j => {
             if (j.result.length > 0) {
@@ -957,6 +984,14 @@ function pembelajaran() {
             } else {
                 timelinekbm.innerHTML = "<h4>Anda belum pernah membuat Materi</h4>";
             }
+            clearInterval(stoploadingtopbar);
+            let divlod = document.querySelector(".loadingtopbar");
+            divlod.style.width = "100%";
+            setTimeout(() => {
+                divlod.style.width = "1px"
+                divlod.className += " w3-hide";
+
+            }, 3000);
         })
 }
 
@@ -1004,8 +1039,7 @@ function templatekronologi(jsonmateri) {
             statuscrtToken = `<b class='w3-text-red'>&times; Tidak Tampil/error </b><br>
             (format Sebaran KD belum digenerate)<br/><span class="w3-red">${sebarankd}</span>`;
 
-        }
-        else {
+        } else {
             statuscrtToken = `<b class='w3-text-blue' >&checkmark; Tampil di siswa </b> dengan kode Token ${adacrtToken}`
         }
 
@@ -1378,8 +1412,7 @@ function tampilinsublamangurukelas(fitur) {
         dataraport.style.display = "none";
         dataframekreatif.style.display = "none";
         document.getElementById("batasaksesguru").scrollIntoView();
-    }
-    else if (fitur == "kehadiranguru") {
+    } else if (fitur == "kehadiranguru") {
         datakelassaya.style.display = "none";
         dataabsensi.style.display = "none";
         datapembelajaran.style.display = "none";
@@ -1390,8 +1423,7 @@ function tampilinsublamangurukelas(fitur) {
         dataframekreatif.style.display = "none";
 
         document.getElementById("batasaksesguru").scrollIntoView();
-    }
-    else if (fitur == "raport") {
+    } else if (fitur == "raport") {
         datakelassaya.style.display = "none";
         dataabsensi.style.display = "none";
         datapembelajaran.style.display = "none";
@@ -1404,8 +1436,7 @@ function tampilinsublamangurukelas(fitur) {
 
 
         document.getElementById("batasaksesguru").scrollIntoView();
-    }
-    else if (fitur == "meme") {
+    } else if (fitur == "meme") {
         datakelassaya.style.display = "none";
         dataabsensi.style.display = "none";
         datapembelajaran.style.display = "none";
@@ -2592,11 +2623,11 @@ const fn_upload_file = (id_input, param, tipe) => {
     data.append("mimeType", tipe);
     data.append("filename", namafile);
     data.append("kelas", idNamaKelas);
-    var url = url_absensiswa;// + "?action=uploaddulu";
+    var url = url_absensiswa; // + "?action=uploaddulu";
     fetch(url, {
-        method: 'post',
-        body: data
-    }).then(m => m.json())
+            method: 'post',
+            body: data
+        }).then(m => m.json())
         .then(r => {
             if (r.sukses == "Gagal") {
                 setTimeout(() => {
@@ -2631,6 +2662,7 @@ function getLocation(el) {
         hfd_dapo_bujur.value = "Duh, HP Anda tidak support. Coba dengan HP Lain";
     }
 }
+
 function showPosition(position) {
     hfd_dapo_lintang.value = position.coords.latitude;
     hfd_dapo_bujur.value = position.coords.longitude;
@@ -2653,11 +2685,16 @@ function distance(lat1, lon1, unit) {
     dist = Math.acos(dist)
     dist = dist * 180 / Math.PI
     dist = dist * 60 * 1.1515
-    if (unit == "K") { dist = dist * 1.609344 }
+    if (unit == "K") {
+        dist = dist * 1.609344
+    }
     // if (unit == "K") { dist = dist * 0.01609344 }
-    if (unit == "N") { dist = dist * 0.8684 }
+    if (unit == "N") {
+        dist = dist * 0.8684
+    }
     return dist
 }
+
 function komponenform(form) { // fungsi untuk membuat Array Object beserta value-nya dalam bentuk JSON
     var koleksielement = form.elements;
     var buatkolomheader = Object.keys(koleksielement).filter(function (k) {
@@ -2701,10 +2738,10 @@ function komponenform(form) { // fungsi untuk membuat Array Object beserta value
     }
 }
 const validasiajuandata = async (tokensiswa) => {
-    let namaform = document.getElementById("formajuandatasiswa");//.elements;
+    let namaform = document.getElementById("formajuandatasiswa"); //.elements;
     let dataoke = [];
     let datagaada = [];
-    let cekhead = arrayheadsumber.filter(s => s !== "time_stamp");//array
+    let cekhead = arrayheadsumber.filter(s => s !== "time_stamp"); //array
 
     let avoid_head = ["aktif", "dieditoleh", "action", "usulanperubahandata"];
     let elemenform = komponenform(namaform); /// object
@@ -2721,7 +2758,7 @@ const validasiajuandata = async (tokensiswa) => {
         if (dataelemen[cekhead[i]] == undefined) {
             datagaada.push(cekhead[i]);
             if (angkadistring.indexOf(cekhead[i]) > -1) {
-                let n = "'";//+ dataelemen[cekhead[i]]
+                let n = "'"; //+ dataelemen[cekhead[i]]
                 valurut.push(n);
             } else {
                 valurut.push("")
@@ -2758,9 +2795,9 @@ const validasiajuandata = async (tokensiswa) => {
 
     infoloadingljk.innerHTML = `<p class="w3-center"><img src="/img/barloading.gif"/></p>`
     await fetch(url_absensiswa + "?action=daftarulangduasheet", {
-        method: "post",
-        body: datakirim
-    })
+            method: "post",
+            body: datakirim
+        })
         .then(m => m.json())
         .then(r => {
             infoloadingljk.innerHTML = r.result;
@@ -2871,7 +2908,8 @@ const detailformulir = async (tokensiswa) => {
     let ss = jlo.ss_datauser;
     let ur = jlo.url_datauser;
     let ling = ur + "?idss=" + ss;
-    let datahtml = "", fil;
+    let datahtml = "",
+        fil;
     loadingljk.style.display = "block";
     $('#infoloadingljk').nextAll('button').remove();
 
@@ -2915,8 +2953,7 @@ const detailformulir = async (tokensiswa) => {
                 let keys = keyss.filter(s => s !== "time_stamp");
                 for (i = 0; i < keys.length; i++) {
                     let el = document.querySelector(".hdp_" + keys[i]);
-                    if (el == undefined || el == null) {
-                    } else {
+                    if (el == undefined || el == null) {} else {
                         if (keys[i].indexOf("dok_") > -1) {
                             let iddoc = (cariid[keys[i]] == "") ? `<b class="w3-text-red">Tidak Melampirkan</b>` : `<div class="containerbaru"><iframe class="responsive-iframebaru" src="https://drive.google.com/file/d/${(cariid[keys[i]] == "") ? "18Zvo5idM92xYEIzqKDDFnc0iqI6JvUnS" : cariid[keys[i]]}/preview" title="dokumen"></iframe></div>`;
                             el.innerHTML = iddoc;
@@ -2933,7 +2970,7 @@ const detailformulir = async (tokensiswa) => {
                 let status = cariid.usulanperubahandata;
 
                 if (status.indexOf("disetujui") > -1) {
-                    teks = "";//status
+                    teks = ""; //status
                 } else {
                     teks = "dan Anda harus segera memverifikasinya"
                 }
@@ -2950,8 +2987,7 @@ const detailformulir = async (tokensiswa) => {
                 let keys = keyss.filter(s => s !== "time_stamp");
                 for (i = 0; i < keys.length; i++) {
                     let el = document.querySelector(".hdp_" + keys[i]);
-                    if (el == undefined || el == null) {
-                    } else {
+                    if (el == undefined || el == null) {} else {
                         if (keys[i].indexOf("dok_") > -1) {
                             let iddoc = (cariid[keys[i]] == "") ? `<b class="w3-text-red">Tidak Melampirkan</b>` : `<div class="containerbaru"><iframe class="responsive-iframebaru" src="https://drive.google.com/file/d/${(cariid[keys[i]] == "") ? "18Zvo5idM92xYEIzqKDDFnc0iqI6JvUnS" : cariid[keys[i]]}/preview" title="dokumen"></iframe></div>`;
                             el.innerHTML = iddoc;
@@ -2975,7 +3011,8 @@ const ajuanperubahandata = async (tokensiswa) => {
     let ss = jlo.ss_datauser;
     let ur = jlo.url_datauser;
     let ling = ur + "?idss=" + ss;
-    let datahtml = "", cariid;
+    let datahtml = "",
+        cariid;
     let namakelas = idNamaKelas;
     loadingljk.style.display = "block";
     $('#infoloadingljk').nextAll('button').remove();
@@ -3007,21 +3044,19 @@ const ajuanperubahandata = async (tokensiswa) => {
                 for (d = 0; d < key.length; d++) {
                     if (elementform[x].name == key[d]) {
                         if (elementform[x].type == "date") {
-                            elementform[x].value = StringTanggalnol(new Date(nilai[d]))//;
+                            elementform[x].value = StringTanggalnol(new Date(nilai[d])) //;
                         } else if (elementform[x].type == "radio") {
                             if (elementform[x].value == nilai[d]) {
                                 elementform[x].checked = true;
                             }
-                        }
-                        else if (elementform[x].type == "select-one") {
+                        } else if (elementform[x].type == "select-one") {
                             // if (elementform[x].options[elementform[x].selectedIndex].value == nilai[d]) {
                             //     elementform[x].options[elementform[x].selectedIndex].selected = true;
                             //     //     elementform[x].selected = true;
                             // }
                             elementform[x].value = nilai[d];
                             // console.log(elementform[x].name + "|" + elementform[x].type)
-                        }
-                        else {
+                        } else {
                             if (angkadistring.indexOf(key[d]) > -1) {
                                 console.log(key[d]);
                                 elementform[x].value = nilai[d];
@@ -3056,7 +3091,8 @@ const ajuanperubahandataolehguru = async (tokensiswa) => {
     let ss = jlo.ss_datauser;
     let ur = jlo.url_datauser;
     let ling = ur + "?idss=" + ss;
-    let datahtml = "", cariid;
+    let datahtml = "",
+        cariid;
     let namakelas = idNamaKelas;
     loadingljk.style.display = "block";
     $('#infoloadingljk').nextAll('button').remove();
@@ -3095,16 +3131,14 @@ const ajuanperubahandataolehguru = async (tokensiswa) => {
                 for (d = 0; d < key.length; d++) {
                     if (elementform[x].name == key[d]) {
                         if (elementform[x].type == "date") {
-                            elementform[x].value = StringTanggalnol(new Date(nilai[d]))//;
+                            elementform[x].value = StringTanggalnol(new Date(nilai[d])) //;
                         } else if (elementform[x].type == "radio") {
                             if (elementform[x].value == nilai[d]) {
                                 elementform[x].checked = true;
                             }
-                        }
-                        else if (elementform[x].type == "select-one") {
+                        } else if (elementform[x].type == "select-one") {
                             elementform[x].value = nilai[d];
-                        }
-                        else {
+                        } else {
                             if (angkadistring.indexOf(key[d]) > -1) {
                                 elementform[x].value = nilai[d].replace("'", "")
                             } else {
@@ -3133,4 +3167,3 @@ const ajuanperubahandataolehguru = async (tokensiswa) => {
         })
 
 };
-
